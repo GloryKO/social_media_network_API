@@ -76,9 +76,14 @@ class PrivateApiTest(TestCase):
         self.client.force_authenticate(user=self.user)
     
     def test_retrieve_profile(self):
+        """Test User can retrieve their profile"""
         res=self.client.get(MANAGE_USER_URL)
         self.assertEqual(res.status_code,status.HTTP_200_OK)
     
     def test_update_user_profile(self):
+        """Test User can update profile"""
         payload = {'name': 'newname', 'password': 'testnewpass'}
-        self.client.patch(MANAGE_USER_URL,payload)
+        res=self.client.patch(MANAGE_USER_URL,payload)
+        self.user.refresh_from_db()
+        self.assertEqual(res.status_code,status.HTTP_200_OK)
+        self.assertEqual(self.user.name,payload['name'])
