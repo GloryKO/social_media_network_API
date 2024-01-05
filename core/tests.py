@@ -6,6 +6,7 @@ from rest_framework import status
 
 CREATE_USER_URL = reverse('register')
 CREATE_TOKEN_URL = reverse('user_token')
+MANAGE_USER_URL = reverse('profile')
 #create a user  
 def create_user(**params):
     return get_user_model().objects.create_user(**params)
@@ -62,3 +63,22 @@ class publicApiTests(TestCase):
         res = self.client.post(CREATE_TOKEN_URL,payload)
         self.assertEqual(res.status_code,status.HTTP_400_BAD_REQUEST)
         self.assertNotIn('token',res.data)
+
+class PrivateApiTest(TestCase):
+    def setUp(self):
+        self.user =create_user(
+            name='testusername',
+            email='test@example.com',
+            password='testpass123'
+            )
+
+        self.client =APIClient()
+        self.client.force_authenticate(user=self.user)
+    
+    def test_retrieve_profile(self):
+        res=self.client.get(MANAGE_USER_URL)
+        self.assertEqual(res.status_code,status.HTTP_200_OK)
+    
+    def test_update_user_profile(self):
+        payload = {'name': 'newname', 'password': 'testnewpass'}
+        self.client.patch(MANAGE_USER_URL,payload)
