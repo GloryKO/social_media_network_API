@@ -15,3 +15,6 @@ class ManageUserView(RetrieveUpdateAPIView):
     permission_classes =[permissions.IsAuthenticated]
     authentication_classes =[authentication.TokenAuthentication]
 
+    def get_object(self):
+        return self.request.user
+    
