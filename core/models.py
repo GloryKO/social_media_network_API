@@ -34,8 +34,8 @@ class CustomUser(AbstractUser):
         return self.email
     
     objects = UserManager()
-    
+
     USERNAME_FIELD ='email'
-    REQUIRED_FIELDS =['email']
+    REQUIRED_FIELDS =[]
 
     
