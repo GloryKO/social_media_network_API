@@ -5,6 +5,7 @@ from django.urls import reverse
 from rest_framework import status
 
 CREATE_USER_URL = reverse('register')
+CREATE_TOKEN_URL = reverse('user_token')
 #create a user  
 def create_user(**params):
     return get_user_model().objects.create_user(**params)
@@ -35,6 +36,17 @@ class publicApiTests(TestCase):
             'password':'testpass123'
         }
         create_user(**payload)#user is already created here
-        
+
         res= self.client.post(CREATE_USER_URL,payload)
         self.assertEqual(res.status_code,status.HTTP_400_BAD_REQUEST)
+
+    def test_create_token_for_user(self):
+        payload={
+            'name':'testusername',
+            'email':'test@example.com',
+            'password':'testpass123'
+        }
+        create_user(**payload)
+        res=self.client.post(CREATE_TOKEN_URL,payload)
+        self.assertEqual(res.status_code,status.HTTP_200_OK)
+        self.assertIn('token',res.data)
