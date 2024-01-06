@@ -28,5 +28,6 @@ urlpatterns = [
         name='api-docs',
     ),
     path('admin/', admin.site.urls),
-    path('api/v1/users/',include('core.urls'))
+    path('api/v1/users/',include('core.urls')),
+    path('api/v1/posts/',include('posts.urls'))
 ]
