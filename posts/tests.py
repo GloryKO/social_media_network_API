@@ -28,3 +28,10 @@ class PublicPostApiTests(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data, serializer.data)
+    
+    def test_unauthenticated_post_returns_error(self):
+        payload={'title':'test post','content':'test content'}
+        res=self.client.post(POSTS_URL,payload)
+        self.assertEqual(res.status_code,status.HTTP_403_FORBIDDEN)
+
+
