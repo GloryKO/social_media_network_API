@@ -51,4 +51,11 @@ class PrivatePostApitest(TestCase):
         self.assertEqual(post.title,res.data['title'])
         self.assertEqual(post.content,res.data['content'])
 
+    def test_update_authenticated_post(self):
+        post=Post.objects.create(title='Old Title', content='Old Content', author=self.user)
+        payload ={'title': 'Updated Title', 'content': 'Updated Content'}
+        url = reverse('post-detail',args=[post.id])
+        res = self.client.put(url,payload)
+        post.refresh_from_db()
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
 
