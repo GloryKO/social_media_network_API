@@ -6,14 +6,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from .permissions import IsOwnerOrReadOnly
 from drf_yasg.utils import swagger_auto_schema
 
-@swagger_auto_schema(
-    operation_summary="Create a new user",
-    operation_description="Endpoint to create a new user.",
-    request_body=UserSerializer,
-    responses={201: UserSerializer()},
-)
 class CreateUserView(CreateAPIView):
-    tags = ['core']
     serializer_class = UserSerializer
 
 class CreateUserTokenView(ObtainAuthToken):
