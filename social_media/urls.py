@@ -17,17 +17,29 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from drf_spectacular.views import SpectacularAPIView,SpectacularSwaggerView
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
 
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Social Media API",
+        default_version='v1',
+        description="Social Media API for a social media network ",
+        terms_of_service="https://www.yourapp.com/terms/",
+        contact=openapi.Contact(email="koladeg37@gmail.cm"),
+        license=openapi.License(name="MIT License"),
+    ),
 
+)
 urlpatterns = [
     path('admin/', admin.site.urls),
        path('api/schema/', SpectacularAPIView.as_view(), name='api-schema'),
     path(
-        'api/docs/',
+        'api/docs/v1',
         SpectacularSwaggerView.as_view(url_name='api-schema'),
         name='api-docs',
     ),
     path('admin/', admin.site.urls),
-    path('api/v1/users/',include('core.urls')),
-    path('api/v1/posts/',include('posts.urls'))
+    path('users/',include('core.urls')),
+    path('posts/',include('posts.urls'))
 ]
