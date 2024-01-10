@@ -66,4 +66,15 @@ class PrivatePostApitest(TestCase):
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(Post.objects.filter(id=post.id).exists())
+    
+    def test_delete_post_unauthenticated(self):
+        post = Post.objects.create(title='Test Post', content='Test Content', author=self.user)
+        url = reverse('post-detail', args=[post.id])
+
+        self.client.force_authenticate(user=None)
+        res = self.client.delete(url)
+        self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
+    
+        self.assertTrue(Post.objects.filter(id=post.id).exists())
+
 
