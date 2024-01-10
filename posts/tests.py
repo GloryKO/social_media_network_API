@@ -17,6 +17,9 @@ class PublicPostApiTests(TestCase):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(name='testname',email='testuser@example.com', password='testpass')
 
+    def create_post(self,title,content,author):
+            return Post.objects.create(title=title,content=content,author=self.user)
+
     def test_retrieve_posts(self):
         """test post retrieval """
         Post.objects.create(title='Test Post 1', content='Content 1', author=self.user)
@@ -35,6 +38,18 @@ class PublicPostApiTests(TestCase):
         payload={'title':'test post','content':'test content'}
         res=self.client.post(POSTS_URL,payload)
         self.assertEqual(res.status_code,status.HTTP_403_FORBIDDEN)
+
+    def test_view_user_post_unauthenticated(self):
+            url = reverse('user-posts-list',kwargs={'user_id':self.user.id})
+            res = self.client.get(url)
+            self.assertEqual(res.status_code,status.HTTP_200_OK)
+    
+
+    def test_view_user_posts_nonexistent_user(self):
+        # Try to view posts for a nonexistent user
+        url = reverse('user-posts-list', kwargs={'user_id': 999})  # 999 is assumed to be a nonexistent user ID
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 class PrivatePostApitest(TestCase):
     def setUp(self):
@@ -76,5 +91,7 @@ class PrivatePostApitest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_403_FORBIDDEN)
     
         self.assertTrue(Post.objects.filter(id=post.id).exists())
+    
+
 
 
