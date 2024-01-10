@@ -87,3 +87,4 @@ class PrivateApiTest(TestCase):
         self.user.refresh_from_db()
         self.assertEqual(res.status_code,status.HTTP_200_OK)
         self.assertEqual(self.user.name,payload['name'])
+        

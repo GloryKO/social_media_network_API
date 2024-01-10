@@ -58,4 +58,12 @@ class PrivatePostApitest(TestCase):
         res = self.client.put(url,payload)
         post.refresh_from_db()
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+    
+    def test_delete_post_authenticated(self):
+        post = Post.objects.create(title='Test Post', content='Test Content', author=self.user)
+        url = reverse('post-detail', args=[post.id])
+        res = self.client.delete(url)
+
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertFalse(Post.objects.filter(id=post.id).exists())
 
