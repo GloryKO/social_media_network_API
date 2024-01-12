@@ -31,7 +31,7 @@ class UserPostsListView(generics.ListAPIView):
 
 class CommentListView(generics.ListCreateAPIView):
     serializer_class = CommentSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsAuthorOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     
     def get_queryset(self):
         """return the coments for a particlar post"""
@@ -46,7 +46,7 @@ class CommentListView(generics.ListCreateAPIView):
 
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CommentSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,IsAuthorOrReadOnly)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly)
 
     def get_queryset(self):
         post_id = self.kwargs['post_id']

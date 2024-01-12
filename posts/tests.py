@@ -6,7 +6,7 @@ from rest_framework import status
 from django.test import TestCase
 from django.urls import reverse
 from core.models import CustomUser
-from .models import Post
+from .models import Post,Comment
 from .serializers import PostSerializer
 from django.contrib.auth import get_user_model
 
@@ -16,6 +16,8 @@ class PublicPostApiTests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(name='testname',email='testuser@example.com', password='testpass')
+        self.post = Post.objects.create(title='Test Post', content='Test Content', author=self.user)
+      
 
     def create_post(self,title,content,author):
             return Post.objects.create(title=title,content=content,author=self.user)
@@ -50,6 +52,22 @@ class PublicPostApiTests(TestCase):
         url = reverse('user-posts-list', kwargs={'user_id': 999})  # 999 is assumed to be a nonexistent user ID
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_list_comments(self):
+        # Test listing comments for a post (public)
+        url = reverse('comment-list', kwargs={'post_id': self.post.id})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_create_comment_unauthenticated(self):
+        # Test creating a new comment (unauthenticated user)
+        url = reverse('comment-list', kwargs={'post_id': self.post.id})
+        data = {'text': 'New Comment'}
+        response = self.client.post(url, data)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(Comment.objects.count(), 0)
 
 class PrivatePostApitest(TestCase):
     def setUp(self):
@@ -92,6 +110,3 @@ class PrivatePostApitest(TestCase):
     
         self.assertTrue(Post.objects.filter(id=post.id).exists())
     
-
-
-
