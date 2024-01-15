@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from rest_framework import generics,permissions
-from . serializers import PostSerializer,CommentSerializer
-from . models import Post,Comment
+from . serializers import PostSerializer,CommentSerializer,LikeSerializer,DisLikeSerializer
+from . models import Post,Comment,Like,DisLike
 from . permissions import IsAuthorOrReadOnly
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+
 
 class PostListView(generics.ListCreateAPIView):
     queryset = Post.objects.all()
@@ -53,3 +54,57 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
         post_id = self.kwargs['post_id']
         return Comment.objects.filter(post__id = post_id)
 
+class LikeCreateUpdateView(generics.CreateAPIView,generics.UpdateAPIView):
+    queryset = Like.objects.all()
+    permission_classes =(permissions.IsAuthenticated,IsAuthorOrReadOnly)
+    serializer_class = LikeSerializer
+
+    def perform_create(self,serializer):
+        user = self.request.user
+        post = self.get_post()
+        existing_like = Like.objects.filter(user=user,post=post)
+
+        if existing_like:
+            existing_like.delete()
+        else:
+            serializer.save(user=user,post=post)
+    
+    def get_post(self):
+        post_id = self.kwargs.get['post_id']
+        return generics.get_object_or_404(Post,post_id)
+
+class DislikeCreateUpdateView(generics.CreateAPIView,generics.UpdateAPIView):
+    queryset = DisLike.objects.all()
+    permission_classes =(permissions.IsAuthenticated)
+    serializer_class = DisLikeSerializer
+    
+    def perform_create(self,serializer):
+        user = self.request.user
+        post = self.get_post()
+        exisiting_dislike = DisLike.objects.filter(user=user,post=post)
+
+        if exisiting_dislike:
+            exisiting_dislike.delete()
+        else:
+            serializer.save(user=user,post=post)
+
+
+    def get_post(self):
+        post_id = self.kwargs.get['post_id']
+        return generics.get_object_or_404(Post,post_id)
+    
+class LikeListView(generics.ListAPIView):
+    serializer_class = LikeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        post_id = self.kwargs['post_id']
+        return Like.objects.filter(post_id=post_id)
+
+class DislikeListView(generics.ListAPIView):
+    serializer_class = DisLikeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        post_id = self.kwargs['post_id']
+        return DisLike.objects.filter(post_id=post_id)
