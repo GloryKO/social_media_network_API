@@ -47,6 +47,7 @@ class CommentListView(generics.ListCreateAPIView):
 class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CommentSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    lookup_url_kwarg = 'comment_id'
 
     def get_queryset(self):
         post_id = self.kwargs['post_id']

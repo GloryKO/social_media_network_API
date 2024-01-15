@@ -48,20 +48,17 @@ class PublicPostApiTests(TestCase):
     
 
     def test_view_user_posts_nonexistent_user(self):
-        # Try to view posts for a nonexistent user
         url = reverse('user-posts-list', kwargs={'user_id': 999})  # 999 is assumed to be a nonexistent user ID
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_list_comments(self):
-        # Test listing comments for a post (public)
         url = reverse('comment-list', kwargs={'post_id': self.post.id})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_create_comment_unauthenticated(self):
-        # Test creating a new comment (unauthenticated user)
         url = reverse('comment-list', kwargs={'post_id': self.post.id})
         data = {'text': 'New Comment'}
         response = self.client.post(url, data)
@@ -74,7 +71,8 @@ class PrivatePostApitest(TestCase):
         self.client = APIClient()
         self.user = get_user_model().objects.create_user(name='testname',email='test@example.com',password='testpass')
         self.client.force_authenticate(self.user)
-
+        self.post = Post.objects.create(title='Test Post', content='Test Content', author=self.user)
+        
     def test_authenticated_user_post(self):
         """Test authenticated user post successful """
         payload={'title':'test title','content':'test content'}
@@ -94,7 +92,7 @@ class PrivatePostApitest(TestCase):
     
     def test_delete_post_authenticated(self):
         post = Post.objects.create(title='Test Post', content='Test Content', author=self.user)
-        url = reverse('post-detail', args=[post.id])
+        url = reverse('post-detail', args=[post.id])   
         res = self.client.delete(url)
 
         self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
@@ -110,3 +108,27 @@ class PrivatePostApitest(TestCase):
     
         self.assertTrue(Post.objects.filter(id=post.id).exists())
     
+    def test_create_comment_authenticated(self):
+        url = reverse('comment-list', kwargs={'post_id': self.post.id})
+        data = {'text': 'New Comment','author':self.user.id,'post':self.post.id}
+        response = self.client.post(url, data)
+     
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Comment.objects.count(), 1)
+
+    def test_update_comment(self):
+        comment = Comment.objects.create(post=self.post, author=self.user, text='Original Comment')
+        url = reverse('comment-detail', kwargs={'post_id': self.post.id, 'comment_id': comment.id})
+        data = {'text': 'Updated Comment','author':self.user.id,'post':self.post.id}
+        response = self.client.put(url, data)
+      
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(Comment.objects.get(id=comment.id).text, 'Updated Comment')
+
+    def test_delete_comment(self):
+        comment = Comment.objects.create(post=self.post, author=self.user, text='To be deleted')
+        url = reverse('comment-detail', kwargs={'post_id': self.post.id, 'comment_id': comment.id})
+        response = self.client.delete(url)
+       
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(Comment.objects.count(), 0)
