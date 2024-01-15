@@ -52,3 +52,4 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         post_id = self.kwargs['post_id']
         return Comment.objects.filter(post__id = post_id)
+
