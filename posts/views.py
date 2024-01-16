@@ -54,9 +54,9 @@ class CommentDetailView(generics.RetrieveUpdateDestroyAPIView):
         post_id = self.kwargs['post_id']
         return Comment.objects.filter(post__id = post_id)
 
-class LikeCreateUpdateView(generics.CreateAPIView,generics.UpdateAPIView):
+class LikeCreateView(generics.CreateAPIView):
     queryset = Like.objects.all()
-    permission_classes =(permissions.IsAuthenticated,IsAuthorOrReadOnly)
+    permission_classes =(permissions.IsAuthenticated,)
     serializer_class = LikeSerializer
 
     def perform_create(self,serializer):
@@ -73,9 +73,9 @@ class LikeCreateUpdateView(generics.CreateAPIView,generics.UpdateAPIView):
         post_id = self.kwargs.get['post_id']
         return generics.get_object_or_404(Post,post_id)
 
-class DislikeCreateUpdateView(generics.CreateAPIView,generics.UpdateAPIView):
+class DislikeCreateView(generics.CreateAPIView):
     queryset = DisLike.objects.all()
-    permission_classes =(permissions.IsAuthenticated)
+    permission_classes =(permissions.IsAuthenticated,)
     serializer_class = DisLikeSerializer
     
     def perform_create(self,serializer):
@@ -95,7 +95,7 @@ class DislikeCreateUpdateView(generics.CreateAPIView,generics.UpdateAPIView):
     
 class LikeListView(generics.ListAPIView):
     serializer_class = LikeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         post_id = self.kwargs['post_id']
@@ -103,7 +103,7 @@ class LikeListView(generics.ListAPIView):
 
 class DislikeListView(generics.ListAPIView):
     serializer_class = DisLikeSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
         post_id = self.kwargs['post_id']
