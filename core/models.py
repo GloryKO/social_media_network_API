@@ -1,6 +1,7 @@
 from django.db import models
+from django.db.models import UniqueConstraint
 from django.contrib.auth.models import AbstractUser,BaseUserManager
-
+from django.contrib.auth import get_user_model
 # CCreate a User manager to manage the User objects
 class UserManager(BaseUserManager):
 
@@ -38,4 +39,16 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD ='email'
     REQUIRED_FIELDS =[]
 
+class Follow(models.Model):
+    follower = models.ForeignKey(get_user_model(),on_delete=models.CASCADE,related_name='following')
+    following=models.ForeignKey(get_user_model(),on_delete=models.CASCADE,related_name='followers')
+    created_at=models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            UniqueConstraint(fields=['follower','following'],name='unique_following')
+        ]
+    
+    def __str__(self):
+        return f"{self.follower} follows {self.following} "
     

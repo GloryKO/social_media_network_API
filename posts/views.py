@@ -70,7 +70,7 @@ class LikeCreateView(generics.CreateAPIView):
             serializer.save(user=user,post=post)
     
     def get_post(self):
-        post_id = self.kwargs.get['post_id']
+        post_id = self.kwargs['post_id']
         return generics.get_object_or_404(Post,post_id)
 
 class DislikeCreateView(generics.CreateAPIView):
@@ -90,7 +90,7 @@ class DislikeCreateView(generics.CreateAPIView):
 
 
     def get_post(self):
-        post_id = self.kwargs.get['post_id']
+        post_id = self.kwargs['post_id']
         return generics.get_object_or_404(Post,post_id)
     
 class LikeListView(generics.ListAPIView):

@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model,authenticate
 from rest_framework import serializers
+from . models import Follow
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,4 +35,8 @@ class AuthTokenSerializer(serializers.Serializer):
             raise serializers.ValidationError(msg,code='authorization')
         attrs['user']=user
         return attrs
-     
+
+class FollowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields='__all__'
