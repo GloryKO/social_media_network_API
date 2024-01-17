@@ -1,10 +1,13 @@
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
-from rest_framework.generics import CreateAPIView,RetrieveUpdateAPIView,ListCreateAPIView,ListAPIView
+from rest_framework.generics import CreateAPIView,RetrieveUpdateAPIView,RetrieveAPIView,ListAPIView
 from . serializers import UserSerializer,AuthTokenSerializer,FollowSerializer
 from rest_framework import permissions,authentication
 from rest_framework.authtoken.views import ObtainAuthToken
 from .permissions import IsOwnerOrReadOnly
+from django.http import JsonResponse
+from rest_framework.decorators import api_view,permission_classes
+
 #from drf_yasg.utils import swagger_auto_schema
 from . models import Follow
 
@@ -40,5 +43,13 @@ class FollowerListView(ListAPIView):
         user_id = self.kwargs['user_id']
         user = get_user_model().objects.get(id=user_id)
         return user.followers.all()
-   
-
+    
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def followers_count_view(request,user_id):
+    try:
+        user = get_user_model().objects.get(id=user_id)
+        followers_count = user.followers.count()
+        return JsonResponse({'followers_count':followers_count})
+    except get_user_model().DoesNotExist:
+        return JsonResponse ({'error':'user not found'},status=404)
