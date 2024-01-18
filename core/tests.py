@@ -106,3 +106,9 @@ class PrivateApiTest(TestCase):
         data = {'follower': self.user.id, 'following':self.other_user.id}
         response = self.client.post(url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    
+    def test_follower_list(self):
+        url = reverse('followers-list',kwargs={'user_id':self.user.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code,status.HTTP_200_OK)
+        
