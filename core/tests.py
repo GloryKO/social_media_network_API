@@ -111,4 +111,10 @@ class PrivateApiTest(TestCase):
         url = reverse('followers-list',kwargs={'user_id':self.user.id})
         response = self.client.get(url)
         self.assertEqual(response.status_code,status.HTTP_200_OK)
+    
+    def test_followers_count(self):
+        url = reverse('followers-count', kwargs={'user_id': self.user.id})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
         
