@@ -44,12 +44,22 @@ class FollowerListView(ListAPIView):
         user = get_user_model().objects.get(id=user_id)
         return user.followers.all()
     
-@api_view(['GET'])
-@permission_classes([permissions.IsAuthenticated])
-def followers_count_view(request,user_id):
-    try:
+# @api_view(['GET'])
+# @permission_classes([permissions.IsAuthenticated])
+# def followers_count_view(request,user_id):
+#     try:
+#         user = get_user_model().objects.get(id=user_id)
+#         followers_count = user.followers.count()
+#         return JsonResponse({'followers_count':followers_count})
+#     except get_user_model().DoesNotExist:
+#         return JsonResponse ({'error':'user not found'},status=404)
+    
+class FollowersCountView(RetrieveAPIView):
+    serializer_class = FollowSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user_id = self.kwargs['user_id']
         user = get_user_model().objects.get(id=user_id)
         followers_count = user.followers.count()
-        return JsonResponse({'followers_count':followers_count})
-    except get_user_model().DoesNotExist:
-        return JsonResponse ({'error':'user not found'},status=404)
+        return JsonResponse({'followers_count': followers_count})

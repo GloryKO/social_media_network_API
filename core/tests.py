@@ -3,6 +3,7 @@ from rest_framework.test import APIClient
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from rest_framework import status
+from . models import Follow
 
 CREATE_USER_URL = reverse('register')
 CREATE_TOKEN_URL = reverse('user_token')
@@ -71,7 +72,7 @@ class PrivateApiTest(TestCase):
             email='test@example.com',
             password='testpass123'
             )
-
+        self.other_user = get_user_model().objects.create_user(email='other@sample.com',name='otheruser', password='otherpass')
         self.client =APIClient()
         self.client.force_authenticate(user=self.user)
     
@@ -87,4 +88,12 @@ class PrivateApiTest(TestCase):
         self.user.refresh_from_db()
         self.assertEqual(res.status_code,status.HTTP_200_OK)
         self.assertEqual(self.user.name,payload['name'])
-        
+    
+    def test_follow_user(self):
+       
+        url=reverse('follow',kwargs={'user_id':self.other_user.id})
+        data = {'follower': self.user.id, 'following':self.other_user.id}
+        response = self.client.post(url,data)
+        #print(response.content)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(Follow.objects.filter(follower=self.user, following=self.other_user).exists())
