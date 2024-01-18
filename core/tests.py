@@ -65,6 +65,7 @@ class publicApiTests(TestCase):
         self.assertEqual(res.status_code,status.HTTP_400_BAD_REQUEST)
         self.assertNotIn('token',res.data)
 
+
 class PrivateApiTest(TestCase):
     def setUp(self):
         self.user =create_user(
@@ -97,3 +98,11 @@ class PrivateApiTest(TestCase):
         #print(response.content)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(Follow.objects.filter(follower=self.user, following=self.other_user).exists())
+
+    def test_follow_user_unauthenticated(self):
+        # Test that an unauthenticated user cannot follow another user
+        self.client.force_authenticate(user=None)
+        url = reverse('follow', kwargs={'user_id': self.other_user.id})
+        data = {'follower': self.user.id, 'following':self.other_user.id}
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
