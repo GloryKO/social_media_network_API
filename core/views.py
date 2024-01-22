@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
-from rest_framework.generics import CreateAPIView,RetrieveUpdateAPIView,RetrieveAPIView,ListAPIView
+from rest_framework.generics import CreateAPIView,RetrieveUpdateAPIView,RetrieveAPIView,ListAPIView,DestroyAPIView
 from . serializers import UserSerializer,AuthTokenSerializer,FollowSerializer
 from rest_framework import permissions,authentication
 from rest_framework.authtoken.views import ObtainAuthToken
@@ -43,7 +43,15 @@ class FollowerListView(ListAPIView):
         user_id = self.kwargs['user_id']
         user = get_user_model().objects.get(id=user_id)
         return user.followers.all()
-    
+class UnfollowView(DestroyAPIView):
+    queryset = Follow.objects.all()
+    serializer_class=FollowSerializer
+    permission_classes=(permissions.IsAuthenticated,)
+
+    def get_object(self):
+        follower = self.request.user
+        following_id = self.kwargs['user_id']
+        return Follow.objects.get(follower=follower,following_id=following_id)
 # @api_view(['GET'])
 # @permission_classes([permissions.IsAuthenticated])
 # def followers_count_view(request,user_id):

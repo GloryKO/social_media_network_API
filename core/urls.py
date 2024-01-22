@@ -8,5 +8,6 @@ urlpatterns=[
     path('profile/',views.ManageUserView.as_view(),name='profile'),
     path('<int:user_id>/followers/',views.FollowerListView.as_view(),name='followers-list'),
     path('<int:user_id>/create_follow/',views.FollowCreateView.as_view(),name='follow'),
+    path('<int:user_id>/unfollow/', views.UnfollowView.as_view(), name='user-unfollow'),
     path('followers/<int:user_id>/count/', views.FollowersCountView.as_view(), name='followers-count'),
 ]
