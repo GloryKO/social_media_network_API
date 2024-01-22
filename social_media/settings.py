@@ -43,6 +43,7 @@ INSTALLED_APPS = [
    # 'drf_yasg',
     'core',
     'posts',
+    'notification'
 ]
 
 REST_FRAMEWORK={
