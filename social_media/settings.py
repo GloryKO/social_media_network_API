@@ -43,8 +43,12 @@ INSTALLED_APPS = [
    # 'drf_yasg',
     'core',
     'posts',
-    'notification'
+    'notification',
+    'channels',
+    'chat'
 ]
+
+ASGI_APPLICATION = 'social_media.routing.application'
 
 REST_FRAMEWORK={
 
@@ -136,3 +140,11 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL ='core.CustomUser'
+
+# Channels
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
