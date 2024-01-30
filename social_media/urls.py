@@ -42,5 +42,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/',include('core.urls')),
     path('posts/',include('posts.urls')),
-    path('notifications/',include('notification.urls'))
+    path('notifications/',include('notification.urls')),
+    path('chat/',include('chat.urls'))
 ]
